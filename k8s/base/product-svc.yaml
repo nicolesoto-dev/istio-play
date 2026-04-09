@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: product-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: product-svc
+        version: v1
+    spec:
+      serviceAccountName: product-svc
+      containers:
+      - name: product-svc
+        image: hashicorp/http-echo:latest
+        args: ["-text=product-svc-v1", "-listen=:8080"]
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-svc-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-svc
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: product-svc
+        version: v2
+    spec:
+      serviceAccountName: product-svc
+      containers:
+      - name: product-svc
+        image: hashicorp/http-echo:latest
+        args: ["-text=product-svc-v2-with-discount", "-listen=:8080"]
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-svc
+spec:
+  selector:
+    app: product-svc
+  ports:
+  - port: 8080
+    targetPort: 8080

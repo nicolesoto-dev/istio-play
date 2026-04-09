@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: order-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: order-svc
+        version: v1
+    spec:
+      serviceAccountName: order-svc
+      containers:
+      - name: order-svc
+        image: hashicorp/http-echo:latest
+        args: ["-text=order-svc-v1", "-listen=:8080"]
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-svc
+spec:
+  selector:
+    app: order-svc
+  ports:
+  - port: 8080
+    targetPort: 8080
