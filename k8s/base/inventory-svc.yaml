@@ -22,10 +22,19 @@ spec:
       serviceAccountName: inventory-svc
       containers:
       - name: inventory-svc
-        image: hashicorp/http-echo:latest
-        args: ["-text=inventory-svc-v1", "-listen=:8080"]
+        image: cloudmart/inventory-svc:v1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SLOW_MODE
+          value: "false"
         ports:
         - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service

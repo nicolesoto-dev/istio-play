@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudmart-phase2-traffic
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2" # Deploy after base
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nicolesoto-dev/istio-play
+    targetRevision: HEAD
+    path: k8s/istio/phase2-traffic
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

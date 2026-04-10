@@ -22,10 +22,21 @@ spec:
       serviceAccountName: order-svc
       containers:
       - name: order-svc
-        image: hashicorp/http-echo:latest
-        args: ["-text=order-svc-v1", "-listen=:8080"]
+        image: cloudmart/order-svc:v1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PRODUCT_SVC_URL
+          value: "http://product-svc:8080"
+        - name: PAYMENT_SVC_URL
+          value: "http://payment-svc:8080"
         ports:
         - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
