@@ -1,3 +1,8 @@
+# kind create cluster \
+#   --name cloudmart \
+#   --config kind-config.yaml \
+#   --image kindest/node:v1.36.4
+
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: cloudmart
